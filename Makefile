@@ -1,5 +1,5 @@
 MODVERSION := $(shell sed -n 's/version=\(.*\)/\1/p' module.prop)
-MOD := zsh_arm64
+MOD := zsh_$(ARCH)
 ZIP := $(MOD)-$(MODVERSION).zip
 #ZIP := $(MOD)-$(MODVERSION)-$(shell date +%m-%d).zip
 
@@ -17,7 +17,7 @@ ARCHIVE := $(SRCDIR).tar.xz
 CURDIR := $(shell pwd)
 PROCS := $(shell nproc)
 
-.PHONY: 
+.PHONY:
 
 all: out/$(ZIP)
 
@@ -54,11 +54,11 @@ build/work/$(SRCDIR)/Makefile: build/work/$(ARCHIVE)
 		--enable-site-scriptdir=/system/usr/share/zsh/scripts \
 		--enable-etcdir=/system/etc \
 		--enable-libs=-lpthread \
-		--host=aarch64-linux-gnu \
+		--host=$(ARCH) \
 		--libexecdir=/system/xbin \
 		--prefix=/system \
 		--sbindir=/system/xbin \
-		--sysconfdir=/system/etc 
+		--sysconfdir=/system/etc
 
 
 build/work/$(SRCDIR)/Src/zsh: build/work/$(SRCDIR)/Makefile $(DEPS)
@@ -66,7 +66,7 @@ build/work/$(SRCDIR)/Src/zsh: build/work/$(SRCDIR)/Makefile $(DEPS)
 	make -j$(PROCS)
 
 
-$(CURDIR)/system/xbin/zsh: build/work/$(SRCDIR)/Src/zsh 
+$(CURDIR)/system/xbin/zsh: build/work/$(SRCDIR)/Src/zsh
 	cd $(CURDIR)/build/work/$(SRCDIR); \
 	make install DESTDIR=$(CURDIR); \
 	chmod 755 $(CURDIR)/system/xbin/*
